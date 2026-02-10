@@ -6,20 +6,27 @@ const API_URL =
 
 interface FetchMoviesResponse {
   results: Movie[];
+  total_pages: number;
 }
-export async function fetchMovies(query: string): Promise<Movie[]> {
+export async function fetchMovies(
+  query: string,
+  page: number = 1,
+): Promise<FetchMoviesResponse> {
   if (!query.trim()) {
-    return [];
+    return {
+      results: [],
+      total_pages: 0,
+    };
   }
   const response = await axios.get<FetchMoviesResponse>(API_URL, {
     params: {
       query: query,
       language: "en-US",
-      page: 1,
+      page: page,
     },
     headers: {
       Authorization: `Bearer ${import.meta.env.VITE_TMDB_TOKEN}`,
     },
   });
-  return response.data.results;
+  return response.data;
 }
