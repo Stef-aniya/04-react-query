@@ -10,11 +10,24 @@ import ErrorMessage from "../ErrorMessage/ErrorMessage";
 import MovieModal from "../MovieModal/MovieModal";
 import { createPortal } from "react-dom";
 
+
+
+
+
+
 export default function App() {
   const [movies, setMovies] = React.useState<Movie[]>([]);
-  const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState(false);
   const [selectedMovie, setSelectedMovie] = React.useState<Movie | null>(null);
+
+  // const [currentPage, setCurrentPage] = React.useState(0);
+
+  // const [topic, setTopic] = React.useState(" ");
+  // const { data, isLoading, isError } = useQuery({
+  //   queryKey: ["movies", topic, currentPage],
+  //   queryFn: () => fetchMovies(topic, currentPage),
+  // });
+
   async function handleSearch(query: string) {
     try {
       setMovies([]);
@@ -42,7 +55,7 @@ export default function App() {
       <Toaster position="top-right" />
       <SearchBar onSubmit={handleSearch} />
       {isLoading && <Loader />}
-      {error && <ErrorMessage />}
+      {isError && <ErrorMessage />}
       <MovieGrid movies={movies} onSelect={handleSelectMovie} />
       {selectedMovie &&
         createPortal(
