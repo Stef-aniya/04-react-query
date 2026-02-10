@@ -2,7 +2,7 @@ import React from "react";
 import css from "./App.module.css";
 import type { Movie } from "../../types/movie";
 import { fetchMovies } from "../../services/movieService";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 import SearchBar from "../SearchBar/SearchBar";
 import MovieGrid from "../MovieGrid/MovieGrid";
 import Loader from "../Loader/Loader";
@@ -14,16 +14,22 @@ import ReactPaginate from "react-paginate";
 export default function App() {
   const [selectedMovie, setSelectedMovie] = React.useState<Movie | null>(null);
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [topic, setTopic] = React.useState(" ");
+  const [topic, setTopic] = React.useState("");
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, isSuccess } = useQuery({
     queryKey: ["movies", topic, currentPage],
     queryFn: () => fetchMovies(topic, currentPage),
     retry: 1,
     enabled: topic.trim().length > 0,
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5,
+    placeholderData: (previousData) => previousData,
   });
+  React.useEffect(() => {
+    if (isSuccess && data?.results.length === 0) {
+      toast.error("No movies found");
+    }
+  }, [isSuccess, data]);
 
   async function handleSearch(query: string) {
     setTopic(query);
